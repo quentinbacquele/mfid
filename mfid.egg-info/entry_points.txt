@@ -1,0 +1,2 @@
+[console_scripts]
+mfid = mfid.cli:main
