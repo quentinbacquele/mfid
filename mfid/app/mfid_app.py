@@ -1,7 +1,8 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout
-from PyQt5.QtGui import QColor, QPalette
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel
+from PyQt5.QtGui import QColor, QPalette, QPixmap
 from PyQt5.QtCore import Qt
+import os
 
 class LauncherApp(QWidget):
     def __init__(self):
@@ -11,9 +12,17 @@ class LauncherApp(QWidget):
     def initUI(self):
         self.apply_dark_theme()
         self.setWindowTitle('App Launcher')
-        self.resize(300, 150)
+        self.resize(600, 500)
         
         layout = QVBoxLayout()
+        
+        # Load and display the image
+        current_dir = os.path.dirname(__file__)
+        image_path = os.path.join(current_dir, '..', '..', 'images', 'main.jpg')
+        imageLabel = QLabel(self)
+        pixmap = QPixmap(image_path)
+        imageLabel.setPixmap(pixmap)
+        layout.addWidget(imageLabel)
         
         # Button to launch Body App
         bodyAppButton = self.create_button('Launch Body App', self.openBodyApp)
