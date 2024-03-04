@@ -57,7 +57,8 @@ This command activates the App Launcher, providing access to various functionali
 **Face Detection and Annotation**: Detects monkeys face and generates datasets with cropped faces and provides tools for both manual and automatic annotation of cropped images.
 **Identity Recognition**: Recognizes and annotate monkeys.
 
-## Body App Instructions
+<details>
+  <summary><h2>Body App Instructions</h2></summary>
 
 - **Model**: Choose the model for detection. The smaller the model, the faster the inference. The larger the model, the better the accuracy.
 - **Confidence Threshold**: Set the confidence threshold for detection.
@@ -65,8 +66,10 @@ This command activates the App Launcher, providing access to various functionali
 - **Show**: Check this box to show the video with detections in real-time.
 - **Save**: Check this box to save the videos with monkey detections.
 - **Save TXT**: Check this box to save the detection results, including bounding box coordinates, in a text file.
+</details>
 
-## Face App Instructions
+<details>
+  <summary><h2>Face App Instructions</h2></summary>
 
 - **Select save folder**: Choose the folder to save the datasets produced.
 
@@ -78,6 +81,7 @@ This command activates the App Launcher, providing access to various functionali
 - **Skip frames**: Choose the interval for detection.
 - **Run detection**: Run the model for face detection.
 
+
 ### Annotation
 
 - **Load folder with extracted faces**: Allows to continue annotation of cropped faces when the detection was already done before.
@@ -85,6 +89,9 @@ This command activates the App Launcher, providing access to various functionali
 - **Automatic annotate**: Sorts cropped faces in the selected folder by keyword.
 - **Delete full frames**: Deletes full frames in the folder once the manual annotation is done.
 
+
+<details>
+  <summary><h2>Identity App Instructions</h2></summary>
 
 ## Identity App Instructions
 
@@ -98,7 +105,8 @@ This command activates the App Launcher, providing access to various functionali
 - Python 3.x
 - CUDA, cuDNN, and compatible GPU (if you plan to use GPU for inference)
 
-## Dependencies
+<details>
+  <summary><h2>Dependencies</h2></summary>
 
 MFID requires the following libraries:
 
@@ -115,5 +123,6 @@ MFID requires the following libraries:
 - tqdm
 - pandas
 - seaborn
+</details>
 
 
