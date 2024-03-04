@@ -88,7 +88,7 @@ This command activates the App Launcher, providing access to various functionali
 - **Annotate cropped faces**: Launchs the manual annotator.
 - **Automatic annotate**: Sorts cropped faces in the selected folder by keyword.
 - **Delete full frames**: Deletes full frames in the folder once the manual annotation is done.
-
+</details>
 
 <details>
   <summary><h2>Identity App Instructions</h2></summary>
