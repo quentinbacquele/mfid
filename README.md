@@ -97,7 +97,7 @@ This command activates the App Launcher, providing access to various functionali
 
 - **Load video/image**: Choose the file for identity detection.
 - **Run detection**: Run the model and provide the image or the video annotated as an output.
-
+</details>
 
 ## Requirements
 
