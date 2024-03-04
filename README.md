@@ -21,22 +21,28 @@ To install MFID, ensure you have Python 3.6 or later installed on your system. F
 1. Clone the MFID repository:
 
 ```bash
-    git clone https://github.com/quentinbacquele/mfid
+git clone https://github.com/quentinbacquele/mfid
 ```
 
 2. Navigate to the cloned directory:
 
 ```bash
-    cd mfid
+cd mfid
 ```
 
 3. Install the required dependencies:
 
 ```bash
-    pip install -e .
+pip install -e .
 ```
 
-4. Optionnal step for GPU usage (if not already done)
+4. Install the required dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+5. Optionnal step for GPU usage (if not already done)
 
 Install PyTorch with the correct CUDA, cuDNN, and GPU support. Follow the instructions on the [official PyTorch website](https://pytorch.org/get-started/locally/).
 
@@ -46,7 +52,7 @@ Install PyTorch with the correct CUDA, cuDNN, and GPU support. Follow the instru
 To launch the MFID application, execute the following command from the terminal:
 
 ```bash
-    mfid
+mfid
 ```
 
 This command activates the App Launcher, providing access to various functionalities, including body detection, face detection, and annotation tools.
