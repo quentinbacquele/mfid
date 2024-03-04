@@ -1,8 +1,8 @@
-# Project Title: MFID (Multi-Factor Identification System)
+# MFID (MonkeyFaceID)
 
 ## Introduction
 
-The MFID (Monkey Face ID) System is a python package designed to recognize Rhesus macaques in videos and images using computer vision. It comprises three main components: body detection, face detection, and identity detection.
+The MFID (MonkeyFaceID) System is a python package designed to recognize Rhesus macaques in videos and images using computer vision. It comprises three main components: body detection, face detection, and identity detection.
 
 ## Table of Contents
 
@@ -10,13 +10,9 @@ The MFID (Monkey Face ID) System is a python package designed to recognize Rhesu
 - Installation
 - Usage
 - Features
+- Requirements
 - Dependencies
-- Configuration
-- Documentation
-- Examples
-- Troubleshooting
-- Contributors
-- License
+
 
 ## Installation
 
@@ -57,9 +53,9 @@ This command activates the App Launcher, providing access to various functionali
 
 ## Features
 
-- **Body Detection**: Sorts videos and images based on monkey presence.
-- **Face Detection and Annotation**: Detects monkeys face and generates datasets with cropped faces and provides tools for both manual and automatic annotation of cropped images.
-- **Identity Recognition**: Recognizes and annotate monkeys.
+**Body Detection**: Sorts videos and images based on monkey presence.
+**Face Detection and Annotation**: Detects monkeys face and generates datasets with cropped faces and provides tools for both manual and automatic annotation of cropped images.
+**Identity Recognition**: Recognizes and annotate monkeys.
 
 ## Body App Instructions
 
@@ -90,7 +86,7 @@ This command activates the App Launcher, providing access to various functionali
 - **Delete full frames**: Deletes full frames in the folder once the manual annotation is done.
 
 
-### Identity App Instructions
+## Identity App Instructions
 
 - **Load video/image**: Choose the file for identity detection.
 - **Run detection**: Run the model and provide the image or the video annotated as an output.
