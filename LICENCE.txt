@@ -1,0 +1,5 @@
+Copyright (C) 2024 Quentin Bacquelé
+
+All rights reserved.
+
+This software and associated documentation files (MonkeyFaceID), unless otherwise explicitly stated, are the proprietary and confidential information of Quentin Bacquelé. No part of the Software, including this file, may be copied, modified, propagated, or distributed except in accordance with the terms contained in a written license agreement with Quentin Bacquelé.

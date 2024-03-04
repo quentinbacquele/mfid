@@ -126,8 +126,7 @@ class IdentityApp(QWidget):
         self.statusLabel.setText('Detection completed.')
 
 
-    def closeEvent(self, event):
-        QApplication.quit()
+  
 
 if __name__ == '__main__':
     import sys
