@@ -12,7 +12,7 @@ class BodyApp(QWidget):
         super().__init__()
 
         self.setWindowTitle("MonkeySorter")
-        self.resize(800, 300)
+        self.resize(700, 300)
         self.init_ui()
 
     def init_ui(self):

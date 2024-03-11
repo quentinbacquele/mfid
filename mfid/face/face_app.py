@@ -14,7 +14,7 @@ class FaceApp(QWidget):
     def initUI(self):
         DarkTheme(self) 
         self.setWindowTitle('YOLOv8 Face Detection')
-        self.resize(1000, 200)
+        self.resize(700, 100)
         
         layout = QVBoxLayout()
         
