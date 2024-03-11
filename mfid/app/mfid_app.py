@@ -12,7 +12,7 @@ class LauncherApp(QWidget):
     def initUI(self):
         self.apply_dark_theme()
         self.setWindowTitle('App Launcher')
-        self.resize(600, 500)
+        self.resize(400, 350)
         
         layout = QVBoxLayout()
         
@@ -21,6 +21,7 @@ class LauncherApp(QWidget):
         image_path = os.path.join(current_dir, '..', '..', 'images', 'main.jpg')
         imageLabel = QLabel(self)
         pixmap = QPixmap(image_path)
+        pixmap = pixmap.scaled(600, 500, Qt.KeepAspectRatio)
         imageLabel.setPixmap(pixmap)
         layout.addWidget(imageLabel)
         

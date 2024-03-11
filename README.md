@@ -21,7 +21,7 @@ To install MFID, ensure you have Python 3.6 or later installed on your system. F
 1. Clone the MFID repository:
 
 ```bash
-git clone https://github.com/quentinbacquele/mfid
+git clone https://github.com/quentinbacquele/mfid.git
 ```
 
 2. Navigate to the cloned directory:
