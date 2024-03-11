@@ -59,11 +59,9 @@ This command activates the App Launcher, providing access to various functionali
 
 ## Features
 
-**Body Detection**: Sorts videos and images based on monkey presence.
-\newline 
-**Face Detection and Annotation**: Detects monkeys face and generates datasets with cropped faces and provides tools for both manual and automatic annotation of cropped images.
-\newline 
-**Identity Recognition**: Recognizes and annotate monkeys.
+- **Body Detection**: Sorts videos and images based on monkey presence.
+- **Face Detection and Annotation**: Detects monkeys face and generates datasets with cropped faces and provides tools for both manual and automatic annotation of cropped images.
+- **Identity Recognition**: Recognizes and annotate monkeys.
 
 <details>
   <summary><h2>Body App Instructions</h2></summary>
