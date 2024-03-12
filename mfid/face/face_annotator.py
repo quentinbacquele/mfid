@@ -1,9 +1,8 @@
 import os
-from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QMessageBox, QLineEdit, QCheckBox
-from PyQt5.QtGui import QPixmap, QColor, QPalette
+from PyQt5.QtWidgets import QWidget, QApplication, QVBoxLayout, QLabel, QMessageBox, QLineEdit, QCheckBox
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
-from mfid.utils.theme_dark import DarkTheme, DarkButton, DarkLineEdit
-
+from mfid.utils.theme_dark import DarkTheme, DarkButton
 
 
 class ImageAnnotator(QWidget):
@@ -69,8 +68,20 @@ class ImageAnnotator(QWidget):
                 if pixmap.isNull():
                     raise Exception("Failed to load image.")
 
+                # Get screen size
+                screen = QApplication.primaryScreen().size()
+                screenWidth = screen.width()
+                screenHeight = screen.height()
+
+                # Calculate scaled dimensions as integers
+                scaledWidth = int(screenWidth * 0.5)
+                scaledHeight = int(screenHeight * 0.5)
+
+                # Scale image to fit within the screen size while maintaining the aspect ratio
+                scaledPixmap = pixmap.scaled(scaledWidth, scaledHeight, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
                 self.fullFrameWindow = QLabel()
-                self.fullFrameWindow.setPixmap(pixmap.scaled(1200, 1200, Qt.KeepAspectRatio))
+                self.fullFrameWindow.setPixmap(scaledPixmap)
                 self.fullFrameWindow.show()
             else:
                 print("Frame path does not exist.")  # Debugging print

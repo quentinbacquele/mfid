@@ -15,7 +15,7 @@ class IdentityApp(QWidget):
     def initUI(self):
         DarkTheme(self)
         self.setWindowTitle('Monkey Identity Detection')
-        self.resize(500, 200)
+        self.resize(700, 100)
         
         layout = QVBoxLayout()
         

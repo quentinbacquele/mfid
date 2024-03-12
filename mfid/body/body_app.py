@@ -91,8 +91,10 @@ class BodyApp(QWidget):
         if params["device"] == "None":
             params["device"] = None
 
+        script_directory = os.path.dirname(__file__)  
+        model_directory = os.path.normpath(os.path.join(script_directory, '..', 'models'))
         model_name = f"best_{params['model']}.pt"
-        self.model = YOLO(os.path.join(self.model_directory, model_name))
+        self.model = YOLO(os.path.join(model_directory, model_name))
 
         detection_folder = os.path.join(video_folder, "detections")
         no_detection_folder = os.path.join(video_folder, "no_detections")
@@ -107,9 +109,11 @@ class BodyApp(QWidget):
 
                 has_detections = False
                 for result in results:
-                    if len(result.boxes.boxes) > 0:
-                        has_detections = True
-                        break
+                    boxes = result.boxes
+                    for box in boxes:
+                        if len(box.xyxy[0]) > 0:
+                            has_detections = True
+                            break
 
                 output_folder = detection_folder if has_detections else no_detection_folder
                 output_path = os.path.join(output_folder, file)

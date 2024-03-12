@@ -52,7 +52,7 @@ Install PyTorch with the correct CUDA, cuDNN, and GPU support. Follow the instru
 To launch the MFID application, execute the following command from the terminal:
 
 ```bash
-mfid
+mfid run
 ```
 
 This command activates the App Launcher, providing access to various functionalities, including body detection, face detection, and annotation tools.

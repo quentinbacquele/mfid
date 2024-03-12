@@ -10,8 +10,9 @@ from mfid.utils.theme_dark import DarkTheme, DarkButton, DarkLineEdit
 
 
 class DetectionWindow(QWidget):
-    def __init__(self):
+    def __init__(self, saveFolder=None):
         super().__init__()
+        self.saveFolder = saveFolder
         self.initUI()
 
     def initUI(self):
@@ -89,7 +90,7 @@ class DetectionWindow(QWidget):
         def process_video(video_path, save_folder, skip_frames=5):
             nonlocal processed_videos
             current_script_dir = os.path.dirname(os.path.abspath(__file__))
-            path_to_yolo_model = os.path.join(current_script_dir, 'models/best_l_face.pt')
+            path_to_yolo_model = os.path.join(current_script_dir, '..', 'models/best_l_face.pt')
             video_name = os.path.splitext(os.path.basename(video_path))[0]
             model = YOLO(path_to_yolo_model)
             results = model(video_path, stream=True)

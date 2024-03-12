@@ -1,14 +1,15 @@
 import os
 import shutil
-from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QFileDialog, QMessageBox, QLineEdit
+from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QFileDialog, QMessageBox, QLineEdit, QLabel
 from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtCore import Qt
 from mfid.face.face_annotator import ImageAnnotator
 from mfid.utils.theme_dark import DarkTheme, DarkButton, DarkLineEdit
 
 class AnnotationWindow(QWidget):
-    def __init__(self):
+    def __init__(self, saveFolder=None):
         super().__init__()
+        self.saveFolder = saveFolder
         self.initUI()
 
     def initUI(self):
@@ -24,6 +25,8 @@ class AnnotationWindow(QWidget):
         DarkLineEdit(self.autoAnnotateInput, 'Enter keyword for automatic annotation (e.g., kabuki)')
         self.autoAnnotateButton = DarkButton('Automatic Annotate', self.autoAnnotate)
         self.deleteFramesButton = DarkButton('Delete Full Frames', self.deleteFullFrames)
+        self.statusLabel = QLabel('No folder selected', self)  
+        self.statusLabel.setWordWrap(True)
         
         # Add all widgets and set the layout
         layout.addWidget(self.loadFacesButton)
@@ -31,6 +34,7 @@ class AnnotationWindow(QWidget):
         layout.addWidget(self.autoAnnotateInput)
         layout.addWidget(self.autoAnnotateButton)
         layout.addWidget(self.deleteFramesButton)
+        layout.addWidget(self.statusLabel)
         
         self.setLayout(layout)
         
@@ -56,7 +60,7 @@ class AnnotationWindow(QWidget):
             self.annotator = ImageAnnotator(self.facesFolder)
             self.annotator.show()
         else:
-            QMessageBox.warning(self, 'Missing Information', 'Please run detection first to generate cropped faces or select a folder with faces to annotate.')
+            QMessageBox.warning(self, 'Missing Information', 'Please select a folder with faces to annotate.')
     
     def autoAnnotate(self):
         keyword = self.autoAnnotateInput.text().strip().lower()
