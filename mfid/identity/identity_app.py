@@ -2,10 +2,13 @@ import os
 import threading
 import cv2
 from ultralytics import YOLO
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QFileDialog, QMessageBox, QLabel
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QFileDialog, QMessageBox, QLabel, QComboBox, QLineEdit
 from PyQt5.QtCore import Qt
 import glob  
+import subprocess
 from mfid.utils.theme_dark import DarkTheme, DarkButton, DarkLineEdit
+from mfid.identity.training_identity import TrainingApp
+
 
 class IdentityApp(QWidget):
     def __init__(self):
@@ -18,29 +21,45 @@ class IdentityApp(QWidget):
         self.resize(700, 100)
         
         layout = QVBoxLayout()
-        
-        self.loadFileButton = DarkButton('Load Video/Image', self.openFileNameDialog)
+
+        self.trainingButton = QPushButton('Training', self)
+        self.trainingButton.clicked.connect(self.openTrainingWindow)  
+        self.loadFileButton = DarkButton('Load Videos/Images', self.openFileNameDialog)
         self.runButton = DarkButton('Run Detection', self.runDetection)
         self.statusLabel = QLabel('Status: Waiting for input', self)
         
+        layout.addWidget(self.trainingButton)
         layout.addWidget(self.loadFileButton)
         layout.addWidget(self.runButton)
         layout.addWidget(self.statusLabel)
         
         self.setLayout(layout)
 
+
+    def openTrainingWindow(self):
+        self.trainingWindow = TrainingApp()
+        self.trainingWindow.show()
+
     def openFileNameDialog(self):
         options = QFileDialog.Options()
-        file, _ = QFileDialog.getOpenFileName(self, "Select Video/Image", "", "All Files (*);;Video Files (*.mp4 *.avi *.mov);;Image Files (*.jpg *.jpeg *.png)", options=options)
-        if file:
-            self.fileName = file
-            self.statusLabel.setText('File Selected: ' + os.path.basename(file))
+        files, _ = QFileDialog.getOpenFileNames(self, "Select Videos/Images", "", "Video Files (*.mp4 *.avi *.mov);;Image Files (*.jpg *.jpeg *.png)", options=options)
+        self.filePaths = files
+
+        if self.filePaths:
+            fileNames = ', '.join([os.path.basename(f) for f in self.filePaths])
+            self.statusLabel.setText(f'Files Selected: {fileNames}')
+        else:
+            self.statusLabel.setText('No file selected')
 
     def runDetection(self):
-        if not hasattr(self, 'fileName'):
+        if not hasattr(self, 'filePaths') or not self.filePaths:
             QMessageBox.warning(self, 'Missing Information', 'Please select a video or an image.')
             return
-        threading.Thread(target=self.processDetection, args=(self.fileName,), daemon=True).start()
+        threading.Thread(target=self.processFiles, args=(self.filePaths,), daemon=True).start()
+
+    def processFiles(self, file_paths):
+        for file_path in file_paths:
+            self.processDetection(file_path)
 
     def processDetection(self, file_path):
         self.statusLabel.setText('Running detection...')
@@ -68,15 +87,21 @@ class IdentityApp(QWidget):
 
         base_name = os.path.splitext(os.path.basename(file_path))[0]
 
+        txt_file_path = os.path.join(save_folder, f"{base_name}_identity.txt")
+        txt_file = open(txt_file_path, "w")
+        txt_file.write("Confs\tNames\n")  # Write the header of the columns
+
         if is_video:
-            output_file_name = f"{base_name}_identity.avi"  # Force .avi extension for videos
+            output_file_name = f"{base_name}_identity.mp4"  # Force .avi extension for videos
             output_file_path = os.path.join(save_folder, output_file_name)
 
             cap = cv2.VideoCapture(file_path)
             frame_rate = int(cap.get(cv2.CAP_PROP_FPS))
-            frame_width = int(cap.get(3))
-            frame_height = int(cap.get(4))
-            out = cv2.VideoWriter(output_file_path, cv2.VideoWriter_fourcc('M','J','P','G'), frame_rate, (frame_width, frame_height))
+            frame_width = int(cap.get(3*0.5))
+            frame_height = int(cap.get(4*0.5))
+
+            fourcc = cv2.VideoWriter_fourcc(*'X264')
+            out = cv2.VideoWriter(output_file_path, fourcc, frame_rate, (frame_width, frame_height))
 
         face_results = face_model(file_path, stream=is_video)  # Use stream mode for videos
         face_counter = 0
@@ -94,15 +119,21 @@ class IdentityApp(QWidget):
 
                 identity_results = identity_model(cropped_img_path)
                 for identity_result in identity_results:
-                    idx = identity_result.probs.top1
-                    conf = identity_result.probs.top1conf.item()
+                    idx1 = identity_result.probs.top1
+                    idx5 = identity_result.probs.top5
+                    conf1 = identity_result.probs.top1conf.item()
+                    conf5 = identity_result.probs.top5conf.tolist()
                     names_dict = identity_result.names
-                    conf_name = names_dict[idx]
+                    conf_name = names_dict[idx1]
+                    conf_names = [names_dict[i] for i in idx5]
+            
+                    txt_file.write(f"{conf5}\t{conf_names}\n")
 
                     # Draw rectangle and text on the original frame
                     cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
-                    text = f'{conf_name}: {conf:.2f}'
+                    text = f'{conf_name}: {conf1:.2f}'
                     cv2.putText(frame, text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+                    
 
                 face_counter += 1
 
@@ -117,6 +148,8 @@ class IdentityApp(QWidget):
             # Release everything when job is finished for videos
             out.release()
             cap.release()
+        
+        txt_file.close()
 
         # Remove cropped images and annotated frames
         files_to_remove = glob.glob(os.path.join(save_folder, 'face_*.jpg')) 
