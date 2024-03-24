@@ -46,6 +46,13 @@ pip install -r requirements.txt
 
 Install PyTorch with the correct CUDA, cuDNN, and GPU support. Follow the instructions on the [official PyTorch website](https://pytorch.org/get-started/locally/).
 
+6. Update the repository
+
+```bash
+cd mfid
+git pull origin master
+```
+
 
 ## Usage
 
