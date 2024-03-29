@@ -59,9 +59,11 @@ class IdentityApp(QWidget):
 
     def processFiles(self, file_paths):
         for file_path in file_paths:
+            cumulative_scores = {}
             self.processDetection(file_path)
+            self.saveCumulativeResults(cumulative_scores, file_path)
 
-    def processDetection(self, file_path):
+    def processDetection(self, file_path, cumulative_scores):
         self.statusLabel.setText('Running detection...')
         QApplication.processEvents()  # Ensure the GUI updates the label text
 
@@ -119,6 +121,11 @@ class IdentityApp(QWidget):
 
                 identity_results = identity_model(cropped_img_path)
                 for identity_result in identity_results:
+                    for idx, conf in zip(identity_result.probs.top5, identity_result.probs.top5conf):
+                        label = identity_result.names[idx]
+                        if label not in cumulative_scores:
+                            cumulative_scores[label] = []
+                        cumulative_scores[label].append(conf)
                     idx1 = identity_result.probs.top1
                     idx5 = identity_result.probs.top5
                     conf1 = identity_result.probs.top1conf.item()
@@ -157,6 +164,22 @@ class IdentityApp(QWidget):
             os.remove(file)
 
         self.statusLabel.setText('Detection completed.')
+
+    def saveCumulativeResults(self, cumulative_scores, file_path):
+        # Calculate the mean accuracy for each label
+        mean_scores = {label: sum(scores) / len(scores) for label, scores in cumulative_scores.items()}
+        # Sort the results by highest mean score
+        sorted_mean_scores = sorted(mean_scores.items(), key=lambda x: x[1], reverse=True)[:5]
+
+        save_folder = os.path.join(os.path.dirname(file_path), 'detection')
+        os.makedirs(save_folder, exist_ok=True)
+        base_name = os.path.splitext(os.path.basename(file_path))[0]
+        summary_file_path = os.path.join(save_folder, f"{base_name}_summary.txt")
+
+        with open(summary_file_path, "w") as f:
+            f.write("Label\tMean Accuracy\n")
+            for label, mean_score in sorted_mean_scores:
+                f.write(f"{label}\t{mean_score:.4f}\n")
 
 
   
