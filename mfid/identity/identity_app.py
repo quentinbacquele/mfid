@@ -14,6 +14,8 @@ class IdentityApp(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
+        self.rank_counts = {}
+        self.total_entries = 0
 
     def initUI(self):
         DarkTheme(self)
@@ -47,6 +49,8 @@ class IdentityApp(QWidget):
 
         if self.filePaths:
             fileNames = ', '.join([os.path.basename(f) for f in self.filePaths])
+            if len(fileNames) > 100:  
+                fileNames = fileNames[:100] + '...'
             self.statusLabel.setText(f'Files Selected: {fileNames}')
         else:
             self.statusLabel.setText('No file selected')
@@ -59,11 +63,12 @@ class IdentityApp(QWidget):
 
     def processFiles(self, file_paths):
         for file_path in file_paths:
-            cumulative_scores = {}
             self.processDetection(file_path)
-            self.saveCumulativeResults(cumulative_scores, file_path)
 
-    def processDetection(self, file_path, cumulative_scores):
+        self.createSummary(file_paths)
+
+
+    def processDetection(self, file_path):
         self.statusLabel.setText('Running detection...')
         QApplication.processEvents()  # Ensure the GUI updates the label text
 
@@ -79,7 +84,7 @@ class IdentityApp(QWidget):
         models_dir = os.path.abspath(os.path.join(current_script_dir, '..', 'models'))
 
         path_to_face_model = os.path.join(models_dir, 'best_l_face.pt')
-        path_to_identity_model = os.path.join(models_dir, 'best_m_id.pt')
+        path_to_identity_model = os.path.join(models_dir, 'best_l_id.pt')
 
         face_model = YOLO(path_to_face_model)
         identity_model = YOLO(path_to_identity_model)
@@ -99,10 +104,10 @@ class IdentityApp(QWidget):
 
             cap = cv2.VideoCapture(file_path)
             frame_rate = int(cap.get(cv2.CAP_PROP_FPS))
-            frame_width = int(cap.get(3*0.5))
-            frame_height = int(cap.get(4*0.5))
+            frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-            fourcc = cv2.VideoWriter_fourcc(*'X264')
+            fourcc = cv2.VideoWriter_fourcc(*'avc1')
             out = cv2.VideoWriter(output_file_path, fourcc, frame_rate, (frame_width, frame_height))
 
         face_results = face_model(file_path, stream=is_video)  # Use stream mode for videos
@@ -121,11 +126,6 @@ class IdentityApp(QWidget):
 
                 identity_results = identity_model(cropped_img_path)
                 for identity_result in identity_results:
-                    for idx, conf in zip(identity_result.probs.top5, identity_result.probs.top5conf):
-                        label = identity_result.names[idx]
-                        if label not in cumulative_scores:
-                            cumulative_scores[label] = []
-                        cumulative_scores[label].append(conf)
                     idx1 = identity_result.probs.top1
                     idx5 = identity_result.probs.top5
                     conf1 = identity_result.probs.top1conf.item()
@@ -165,21 +165,61 @@ class IdentityApp(QWidget):
 
         self.statusLabel.setText('Detection completed.')
 
-    def saveCumulativeResults(self, cumulative_scores, file_path):
-        # Calculate the mean accuracy for each label
-        mean_scores = {label: sum(scores) / len(scores) for label, scores in cumulative_scores.items()}
-        # Sort the results by highest mean score
-        sorted_mean_scores = sorted(mean_scores.items(), key=lambda x: x[1], reverse=True)[:5]
 
-        save_folder = os.path.join(os.path.dirname(file_path), 'detection')
-        os.makedirs(save_folder, exist_ok=True)
-        base_name = os.path.splitext(os.path.basename(file_path))[0]
-        summary_file_path = os.path.join(save_folder, f"{base_name}_summary.txt")
+    def createSummary(self, file_paths):
+        weights = [5, 4, 3, 2, 1]
+        file_rankings = {}
+        file_accuracies = {}
 
-        with open(summary_file_path, "w") as f:
-            f.write("Label\tMean Accuracy\n")
-            for label, mean_score in sorted_mean_scores:
-                f.write(f"{label}\t{mean_score:.4f}\n")
+        # Collect rank data and calculate scores for each identity file individually
+        for file_path in file_paths:
+            local_rank_counts = {}
+            local_total_entries = 0
+            local_accuracies = {}
+
+            identity_file_path = os.path.join(os.path.dirname(file_path), 'detection', f"{os.path.splitext(os.path.basename(file_path))[0]}_identity.txt")
+            
+            with open(identity_file_path, 'r') as file:
+                next(file)  # Skip the header line
+                for line in file:
+                    confs, names = line.strip().split('\t')
+                    confs = eval(confs)
+                    names = eval(names)
+
+                    local_total_entries += 1
+
+                    for i, (name, conf) in enumerate(zip(names[:5], confs[:5])):
+                        if name not in local_rank_counts:
+                            local_rank_counts[name] = [0] * 5
+                            local_accuracies[name] = []
+
+                        local_rank_counts[name][i] += 1
+                        local_accuracies[name].append(conf)
+
+            # Calculate weighted scores and mean accuracies for this file
+            weighted_scores = {}
+            mean_accuracies = {}
+            for label, counts in local_rank_counts.items():
+                weighted_score = sum(count * weight for count, weight in zip(counts, weights))
+                weighted_scores[label] = weighted_score / local_total_entries
+                mean_accuracies[label] = sum(local_accuracies[label]) / len(local_accuracies[label])
+
+            # Sort and select the top labels for this file
+            sorted_weighted_scores = sorted(weighted_scores.items(), key=lambda item: item[1], reverse=True)[:5]
+            file_rankings[file_path] = [label for label, _ in sorted_weighted_scores]
+            file_accuracies[file_path] = [mean_accuracies[label] for label in file_rankings[file_path]]
+
+        # Write the summary file using the rankings and accuracies for each file
+        summary_file_path = os.path.join(os.path.dirname(file_paths[0]), 'detection', 'summary.txt')
+        with open(summary_file_path, "w") as summary_file:
+            summary_file.write("File\t1st Label\t2nd Label\t3rd Label\t4th Label\t5th Label\t1st Acc\t2nd Acc\t3rd Acc\t4th Acc\t5th Acc\n")
+            for file_path in file_paths:
+                base_name = os.path.basename(file_path)
+                labels = file_rankings[file_path]
+                accuracies = file_accuracies[file_path]
+                summary_file.write(f"{base_name}\t" + "\t".join(labels) + "\t" + "\t".join(f"{acc:.4f}" for acc in accuracies) + "\n")
+
+
 
 
   
