@@ -1,475 +1,239 @@
 # MFID (MonkeyFaceID) - Comprehensive User Guide
 
-## Introduction
+## 1. Introduction
 
-The MFID (MonkeyFaceID) System is a comprehensive Python application designed for researchers and ecologists working with Rhesus macaques (and adaptable for other species). It leverages computer vision and deep learning to automate and assist in various image and video analysis tasks, from initial animal detection to individual identification and custom model training.
+Welcome to the MFID (MonkeyFaceID) System!
 
-This guide provides a complete overview of the MFID application suite, its components, and how to use them effectively.
+MFID is a powerful and user-friendly application designed for researchers, ecologists, and enthusiasts who work with image and video data. While its name comes from primate research, its tools are versatile enough to be trained for a wide variety of tasks, like identifying different animal species, tracking individuals, or even classifying fruits!
 
-## Key Features
+Think of MFID as a complete digital lab assistant. It helps you with the entire workflow of computer vision:
 
-The MFID suite is composed of several interconnected applications:
+*   **Organizing Your Data:** Sort and label thousands of images with easy-to-use annotation tools.
+*   **Training AI Models:** Teach the computer to recognize what's in your images by creating your own custom AI models. No coding required!
+*   **Analyzing Your Media:** Automatically process folders full of images and videos to detect objects, classify them, and get detailed reports.
 
-*   **Body Detection App:** Filters through videos and images to identify frames or segments containing monkeys, streamlining the initial data processing stages.
-*   **Identity Detection App:** Utilizes trained AI models to recognize and identify individual animals within images or videos.
-*   **Custom Training & Annotation App:** A powerful module for:
-    *   **Annotating Images:** Manually or semi-automatically labeling images to create datasets for training AI models.
-    *   **Training AI Models:** Training custom YOLOv8 image classification models for tasks like species identification or other user-defined categories.
-*   **Settings App:** Allows users to configure global application preferences, such as default output directories.
+This guide will walk you through every step, from installation to analyzing your first dataset.
 
-## 1. Getting Started
+## 2. Installation
 
-### 1.1. System Requirements
+Getting MFID set up on your computer is a straightforward process. Follow these steps carefully.
+
+### 2.1. System Requirements
 
 *   **Operating System:** Windows, macOS, or Linux.
-*   **Python:** Python 3.8 or newer.
+*   **Python:** You'll need Python installed. Version 3.8 or newer is recommended.
 *   **Hardware:**
-    *   A modern multi-core CPU.
-    *   For GPU-accelerated AI model training and inference (highly recommended for speed):
-        *   An NVIDIA GPU with CUDA support (Compute Capability 3.5+).
-        *   Ensure appropriate NVIDIA drivers and CUDA Toolkit are installed.
-    *   Sufficient RAM (16GB+ recommended, especially for training).
-    *   Disk space for storing images, videos, and trained models.
-*   **Git:** For cloning the repository.
+    *   A modern computer is sufficient for most tasks.
+    *   For training new AI models, a powerful computer with a dedicated **NVIDIA Graphics Card (GPU)** is **highly recommended**. Training on a GPU can be 10 to 50 times faster than on a standard computer processor (CPU).
 
-### 1.2. Installation
+### 2.2. Installation Steps
 
-Follow these steps to set up MFID on your system:
-
-1.  **Clone the MFID Repository:**
-    Open your terminal or command prompt and run:
+1.  **Download the Project:**
+    First, you need to get the MFID project files onto your computer. If you have `git` installed, you can run this command in your terminal:
     ```bash
     git clone https://github.com/quentinbacquele/mfid.git
     cd mfid
     ```
+    If you don't use `git`, you can download the project as a ZIP file from the GitHub page and unzip it.
 
-2.  **Set up a Virtual Environment (Recommended):**
-    Using a virtual environment is highly recommended to manage dependencies and avoid conflicts with other Python projects.
+2.  **Set Up a Virtual Environment (Highly Recommended):**
+    This step sounds technical, but it's like creating a dedicated, clean workspace for MFID so it doesn't interfere with other Python software on your computer.
+    Open your terminal or command prompt, navigate into the `mfid` folder you just downloaded, and run:
     ```bash
-    # Navigate to the project directory if you are not already there
-    # cd mfid
+    # This command creates a virtual environment folder named .venv
+    python3 -m venv .venv
 
-    python -m venv .venv  # Creates a .venv virtual environment
-    source .venv/bin/activate  # On Linux/macOS
-    # On Windows, use: .venv\Scripts\activate
+    # To activate it on macOS or Linux:
+    source .venv/bin/activate
+
+    # To activate it on Windows:
+    .venv\Scripts\activate
     ```
+    You'll know it's active because you'll see `(.venv)` at the beginning of your command prompt.
 
 3.  **Install Dependencies:**
-    With your virtual environment activated, install the MFID package and its dependencies using pip:
+    With the virtual environment active, run the following commands. This will install MFID and all the libraries it depends on.
     ```bash
     pip install -e .
-    pip install -r requirements.txt 
-    ```
-    The `-e .` command installs MFID in "editable" mode, so changes to the source code are immediately effective. The `requirements.txt` file ensures all necessary libraries like `PyQt5` and `ultralytics` are installed.
-
-4.  **(Optional but Highly Recommended for GPU Usage) Install PyTorch with CUDA Support:**
-    If you plan to use a GPU, ensure PyTorch is installed with the correct CUDA version matching your system's CUDA Toolkit. Visit the [official PyTorch website](https://pytorch.org/get-started/locally/) for the correct command for your OS and CUDA version. `ultralytics` (which MFID uses) typically handles this, but manual verification can be useful.
-
-5.  **Update the Repository (Optional, for future updates):**
-    To get the latest version of MFID in the future:
-    ```bash
-    cd mfid
-    git pull origin master
-    # Ensure your virtual environment is activated
-    pip install -e . # Re-install in case of setup changes
-    pip install -r requirements.txt # Update dependencies
+    pip install -r requirements.txt
     ```
 
-### 1.3. Launching the Main MFID Application
+That's it! MFID is now installed.
 
-Once installed, you can launch the main MFID application from your terminal (ensure your virtual environment is activated):
+## 3. Getting Started: Launching the Application
+
+To start the main MFID application, make sure your virtual environment is still active, and run the following command in your terminal from the project's root directory:
 
 ```bash
-# Ensure you are in the root directory of the 'mfid' project
-mfid run 
-# OR if the above CLI command isn't set up yet or you prefer direct execution:
-# python -m mfid.mfid_app 
+mfid run
 ```
-This will open the main MFID window, which provides access to all the application modules via a toolbar.
 
-## 2. The MFID Application Suite
+This will open the main MFID window, which acts as a launchpad for all the different tools in the suite.
 
-The main MFID window serves as a launcher for its specialized modules. You'll typically see a toolbar or menu allowing you to open:
-*   Body Detection
-*   Identity Detection
-*   Training (Custom Training & Annotation)
-*   Settings
+![Main App Screenshot](images/main.jpg)
 
-### 2.1. Body Detection App
+From here, you can access all the modules: **Analysis**, **Detection**, **Identity**, **Training**, and **Settings**.
 
-**Purpose:**
-The Body Detection App is used to process collections of videos or images to quickly identify and optionally save segments or frames where monkeys (or other specified subjects) are present. This is useful for pre-filtering large datasets.
+## 4. The MFID Application Suite
 
-**Interface and Options:**
+### 4.1. Analysis App
 
-*   **Input Folder:** Select a folder containing videos or images to process.
-*   **Output Folder:** Specify where to save results (e.g., videos with detections, text files).
-*   **Model:** Choose the YOLOv8 detection model size (e.g., `yolov8n.pt`, `yolov8s.pt`). Smaller models are faster but may be less accurate; larger models are more accurate but slower.
-*   **Confidence Threshold:** A value between 0 and 1. Detections with a confidence score below this threshold will be ignored. (e.g., 0.25 for 25% confidence).
-*   **IOU Threshold (Intersection Over Union):** A value between 0 and 1 used for Non-Maximum Suppression (NMS). It helps eliminate redundant, overlapping bounding boxes for the same object. (e.g., 0.45).
-*   **Show Video/Images:** If checked, displays the video/images with bounding boxes overlaid in real-time during processing.
-*   **Save Processed Video/Images:** If checked, saves a copy of the input files with detections drawn on them.
-*   **Save TXT:** If checked, saves detection results as text files. Each file corresponds to an image/video frame and contains information like class ID, bounding box coordinates (normalized or pixel values), and confidence scores.
+The Analysis App is your central hub for processing large amounts of data. After you have a trained model, this is the tool you'll use to put it to work. It can perform three different types of jobs.
 
-**Workflow:**
+**How to open:** Click the "Analysis" button in the main MFID toolbar.
 
-1.  **Open the Body Detection App** from the main MFID toolbar.
-2.  **Select Input Folder:** Click "Browse..." to choose the folder containing your videos/images.
-3.  **Select Output Folder:** Click "Browse..." to specify where results should be saved.
-4.  **Configure Parameters:** Adjust Model, Confidence Threshold, IOU Threshold, and other options as needed.
-5.  **Run Detection:** Click the "Run Detection" button to start processing.
-6.  Monitor progress (often displayed in the app's status bar or the terminal).
-7.  Find outputs in your specified output folder.
+**Main Features:**
 
-### 2.2. Identity Detection App
+*   **Input:** You can choose to process a single file, a selection of multiple files, or an entire folder of images and videos.
+*   **Output:** All results from an analysis run are saved neatly in a designated output folder.
+*   **Analysis Modes:** You can choose one of three powerful analysis modes.
 
-**Purpose:**
-The Identity Detection App uses pre-trained classification models to identify individual animals in images or videos. This typically follows a face detection step and requires models trained to recognize specific individuals.
+#### 4.1.1. Analysis Mode: Classification
 
-**Interface and Options:**
+*   **What it does:** This mode takes an image and tells you what it is, based on a classification model you provide. For example, it can look at a picture and decide if it's an "Apple" or a "Pear".
+*   **When to use it:** Use this when your goal is to assign a single label to each image.
+*   **Output:** It generates a summary file (`classification_summary.txt`) listing each filename and its predicted category with a confidence score.
 
-*   **Load Video/Image File:** Select a single video or image file to perform identity detection on.
-*   **Select Model File:** Browse and select a trained classification model (`.pt` file, typically generated by the Custom Training & Annotation App). This model should be trained to recognize the individuals you expect to see.
-*   **Output Folder:** Specify where to save the annotated video/image.
-*   **Confidence Threshold (for display/annotation):** Minimum confidence for an identity to be considered valid.
-*   **Run Detection:** Starts the identity recognition process on the loaded file.
+#### 4.1.2. Analysis Mode: Detection
 
-**Workflow:**
+*   **What it does:** This mode scans images or videos to *find* and draw bounding boxes around objects of interest. For example, it can find all the monkeys in a video.
+*   **When to use it:** Use this when you want to locate objects within an image, not just classify the whole image.
+*   **Key Options:**
+    *   **Save Annotated Media:** Saves a copy of your image/video with boxes drawn on it.
+    *   **Save Crops:** Saves each detected object as a separate image file. This is incredibly useful for building new datasets!
+    *   **Sort Detections:** Automatically moves your source files into "positive" and "negative" folders based on whether detections were found.
 
-1.  **Open the Identity Detection App** from the main MFID toolbar.
-2.  **Load Media:** Click "Load Video/Image File" to select the media you want to analyze.
-3.  **Select Model:** Click "Select Model File" to choose the appropriate `.pt` model trained for individual identification.
-4.  **Set Output Folder:** Choose where the processed output (e.g., video with names overlaid) should be saved.
-5.  **Run Detection:** Click "Run Detection."
-6.  The app will process the media, and the output will show bounding boxes around detected faces (or bodies, depending on the model's input assumptions) with the predicted individual's name and confidence score.
+#### 4.1.3. Analysis Mode: Detection + Classification
 
-**Note on Models:** The Identity Detection App relies on models trained using the **Custom Training & Annotation App** (see section 2.3) or other compatible YOLOv8 classification models. Your training data for these models would consist of labeled images of individual animals.
-
-### 2.3. Custom Training & Annotation App
-
-**Purpose:**
-This powerful module allows you to:
-1.  **Annotate Images:** Organize and label your images into different categories (e.g., "Individual_A," "Individual_B," "Species_X," "Species_Y"). This is the crucial first step in creating a dataset for training an AI.
-2.  **Train AI Models:** Use your annotated image datasets to train custom YOLOv8 image classification models. These models can then be used in the Identity Detection App or for other classification tasks.
-
-**(The following is the detailed guide for the Custom Training & Annotation App, integrated here for completeness.)**
+*   **What it does:** This is a powerful two-step pipeline. It first runs **detection** to find all objects of interest. Then, for each object it finds, it runs **classification** to identify it.
+*   **When to use it:** This is the most advanced mode. For example, you could process a video to:
+    1.  Find all the fruit (detection).
+    2.  For each fruit found, decide if it's an apple or a pear (classification).
+*   **Output:** It produces a detailed summary (`detection_classification_summary.txt`) that lists each detection and its corresponding classification label.
 
 ---
 
-**Welcome to the MFID Custom Training & Annotation App section!**
+### 4.2. Custom Training & Annotation App
 
-This part of the guide will walk you through everything you need to know to use this specific app module, from setting it up to training your own custom image classification models. We've designed this app to be as intuitive as possible, even if you're new to AI or image analysis.
+This is where you teach the AI. This module gives you all the tools you need to create your own custom models from scratch.
 
-#### 2.3.1. What is this App Module?
+**How to open:** Click the "Training" button in the main MFID toolbar.
 
-The Custom Training & Annotation App module is a tool designed to help you:
+The app is organized into two main tabs: **Image Annotation** and **YOLOv8 Training**.
 
-1.  **Annotate Images:** Easily sort and label your images into different categories (e.g., "apples," "bananas," "cats," "dogs", or more relevantly for ecology, "Macaque_Alice", "Macaque_Bob"). This process is crucial for teaching an AI what to recognize.
-2.  **Train AI Models:** Use your annotated images to train a custom image classification model. This model will learn to automatically identify the categories you've defined in new images.
+#### 4.2.1. Step 1: Image Annotation
 
-Essentially, you teach the computer by showing it examples, and then it can make predictions on its own!
+Before you can train a model, you must label your data. This is how the AI learns. You need to show it many examples.
 
-#### 2.3.2. Launching the Custom Training & Annotation App
+**Prerequisite:** Select a **Data Folder** containing the images you want to label and an **Output Folder** where your trained models will be saved.
 
-From the main MFID application window, click on the "Training" button or menu item. This will open the Custom Training & Annotation App window.
+There are two ways to train, and the annotation process is different for each.
 
-#### 2.3.3. The Main Window: An Overview
+##### Annotation for a CLASSIFICATION Model
 
-When you launch the app, you'll see the main window. It's organized into two main steps:
+The goal is to sort images into folders. Each folder name is the label for all images inside it.
+*Example: All images of "Apple" go into a folder named `apple`.*
 
-*screenshot placeholder.*
+*   **Manual Annotation:**
+    1.  Click **"Launch Manual Annotator"**.
+    2.  A window pops up showing one image at a time.
+    3.  Type the label for the image (e.g., "Apple") and press Enter or click "Next".
+    4.  The app automatically creates a folder with that label (if it doesn't exist) and moves the image into it.
+    5.  This is perfect for carefully labeling images one by one.
 
-*   **Step 1: Select Data Folder & Output Folder**
-    *   **Data Folder:** This is where your images live. It's the source of all the visual information you'll use for annotation and training.
-    *   **Output Folder:** This is where the app will save the AI models you train, along with any results or logs from the training process.
+*   **Auto-Grouping:**
+    1.  If your image filenames already contain the label (e.g., `photo_of_an_apple.jpg`), you can use this shortcut.
+    2.  Type a keyword (e.g., "apple") into the "Auto-Group by Keyword" box.
+    3.  Click the button. The app will find all images with that keyword in their name and move them into a correctly named subfolder for you.
 
-*   **Step 2: Annotate and Train**
-    *   This section has two tabs:
-        *   **Image Annotation:** Tools to help you organize your images into categories.
-        *   **YOLOv8 Training:** Tools to train your AI model using the organized images.
+##### Annotation for a DETECTION Model
 
-Let's dive into each part.
+The goal is to draw boxes around objects in images.
+*Example: In an image with three apples, you will draw three boxes, each labeled "apple".*
 
-#### 2.3.4. Step 1: Selecting Your Folders
+1.  Click **"Launch Manual Annotator"**.
+2.  Check the **"Enable Bounding Box Mode"** box.
+3.  For each image:
+    *   Click and drag your mouse to draw a box around an object.
+    *   A dialog will ask you for the label for that box.
+    *   You can draw multiple boxes on a single image.
+4.  When you click "Next", the app saves a special text file alongside your image that contains the coordinates and labels of all the boxes you drew.
 
-Before you can do anything else, you need to tell the app where your images are and where to save its work.
+#### 4.2.2. Step 2: YOLOv8 Training
 
-##### Data Folder
+Once your data is annotated, you are ready to train.
 
-This is the folder containing all the images you want to work with.
+**Prerequisites:** Your **Data Folder** must be organized correctly from the annotation step.
 
-*   **How to select:**
-    1.  Click the **"Browse..."** button next to "Data Folder:".
-    2.  A file dialog will appear. Navigate to and select the folder that contains your images.
-    3.  Click "Open" or "Select Folder."
-*   The path to your selected folder will appear next to "Data Folder:", replacing "Not Selected."
+1.  **Select Training Mode:** Choose whether you are training a `Classification` or `Detection` model. The app will guide you.
 
-##### Output Folder
+2.  **Configure Basic Settings:**
+    *   **Model Size:** Choose the complexity of the AI. `s` (small) is a great starting point. Larger models (`m`, `l`) are more accurate but slower to train.
+    *   **Epochs:** An epoch is one full training cycle through your dataset. `100` is a good starting value.
+    *   **Image Size:** The size (in pixels) that your images will be resized to for training. `224` or `320` is standard for classification.
+    *   **Experiment Name:** Give your training run a unique, descriptive name (e.g., `Apple_Pear_Classifier_V1`). This name will be used for the output folder.
 
-This is where your trained AI models and other training outputs will be saved.
-
-*   **How to select:**
-    1.  Click the **"Browse..."** button next to "Output Folder:".
-    2.  A file dialog will appear. Navigate to a location where you want to save the outputs, or create a new folder.
-    3.  Click "Open" or "Select Folder."
-*   The path to your selected folder will appear next to "Output Folder:".
-*   **Default:** If you don't choose a specific folder, the app will default to saving in a folder like `YourHomeDirectory/mfid/output/training_models`. You can change this default in the main **Settings App**.
-
-#### 2.3.5. Step 2: Annotate and Train
-
-This is where the main work happens. This section is divided into two tabs.
-
-##### Tab 1: Image Annotation
-
-**Purpose:** To sort your images into distinct categories or "classes." For example, if you want to train a model to recognize individuals "Alice" and "Bob", you'll use this tab to put all images of Alice into an "Alice" category and all images of Bob into a "Bob" category. The AI learns from these organized examples.
-
-**Prerequisite:** You must have selected a "Data Folder" in Step 1.
-
-There are two ways to annotate your images:
-
-###### Manual Annotation
-
-This method is best when your image filenames don't give clues about their content, or if you want to carefully inspect and label each image individually. This is often used for images of cropped faces or bodies.
-
-*   **How to launch:**
-    1.  Ensure your "Data Folder" is selected.
-    2.  Click the **"Launch Manual Annotator"** button.
-    3.  A new window, the "Image Annotator," will pop up.
-
-*   **Using the Manual Annotator Window:**
-    *   **Image Display:** The current image from your data folder is shown here.
-    *   **Enter Label:** In the text box below "Enter Label:", type the category for the current image (e.g., "Alice", "Bob", "Macaque_SpeciesX").
-    *   **Next Image Button:** After typing the label, click this button (or press Enter). The app will:
-        1.  Create a new subfolder within your **original Data Folder** named after the label you provided (if it doesn't already exist).
-        2.  Move the current image into that subfolder.
-        3.  Show you the next image.
-    *   **Previous Image Button:** Click this to go back to the image you just labeled. You can change its label if needed.
-    *   **Mark as False Positive / Delete Button:** If an image is not relevant, is of poor quality, or doesn't belong to any of your categories, click this button. You'll be asked to confirm, and then the image will be permanently deleted from your data folder.
-    *   **Retain Label for Next Image Checkbox:** If you're labeling many images of the same category in a row, check this box. The label you enter will automatically fill in for the next image, saving you typing time.
-
-    *   **Closing the Annotator:** When you're done, or if you close the annotator window:
-        *   If you've made annotations, you might be asked if you want to finalize them (which means moving the images as described).
-        *   The annotator organizes images by moving them into subfolders named after their labels, directly within your selected Data Folder. For example, if your Data Folder is `MyFaces`, and you label images as "Alice", they'll be moved to `MyFaces/Alice/`.
-
-###### Auto-Grouping by Keyword
-
-This method is useful if your image filenames already contain keywords that identify their category (e.g., `face_of_Alice_01.jpg`, `photo_of_Bob_scene2.png`).
-
-*   **How to use:**
-    1.  Ensure your "Data Folder" is selected.
-    2.  In the "Enter a keyword to find in image filenames:" text box, type a keyword (e.g., "Alice"). The keyword is not case-sensitive.
-    3.  Click the **"Auto-Group by Keyword"** button.
-*   **How it works:**
-    *   The app will look for images directly inside your selected Data Folder (not in subfolders).
-    *   If an image filename contains the keyword you entered, the app will:
-        1.  Create a new subfolder within your Data Folder named after the keyword (if it doesn't exist).
-        2.  Move that image into the new subfolder.
-    *   For example, if your Data Folder is `CroppedFaces`, you enter "Bob", and you have an image `frame123_face_Bob.jpg`, it will be moved to `CroppedFaces/Bob/frame123_face_Bob.jpg`.
-    *   A notification will tell you how many images were moved or if none were found.
-
-**Goal of Annotation:** After using either manual annotation or auto-grouping (or a combination), your Data Folder should have a structure like this for classification training:
-
-```
-Your_Data_Folder/
-    ├── category_1_name/  (e.g., Alice)
-    │   ├── image1.jpg
-    │   ├── image2.png
-    │   └── ...
-    ├── category_2_name/  (e.g., Bob)
-    │   ├── imageA.jpeg
-    │   ├── imageB.jpg
-    │   └── ...
-    └── ... (other categories/individuals)
-```
-
-##### Tab 2: YOLOv8 Training
-
-**Purpose:** To train your custom AI model using the images you've neatly organized into categories.
-
-**Prerequisites:**
-
-1.  A "Data Folder" must be selected in Step 1.
-2.  This Data Folder **must** contain subfolders where each subfolder's name is a category label (e.g., "Alice," "Bob"), and each subfolder contains images of that category. This is the structure you create using the "Image Annotation" tab.
-3.  For best results, try to have at least 50-100 images per category. More is often better!
-
-###### Basic Configuration
-
-These are the main settings for your training:
-
-*   **Model Size:** (Options: n, s, m, l, x for YOLOv8 classification models like `yolov8n-cls.pt`)
-    *   This determines the complexity of the AI model.
-    *   `n` (nano) is the smallest and fastest to train, but might be less accurate.
-    *   `x` (extra-large) is the largest, potentially most accurate, but takes much longer to train and requires more computing power.
-    *   **Recommendation for beginners:** Start with `s` (small) or `m` (medium).
-*   **Epochs:** (e.g., 100, 150, 200)
-    *   An epoch is one complete pass where the AI model looks at all your training images.
-    *   More epochs can lead to better learning, but too many can cause the model to "memorize" your training images instead of learning general patterns (this is called overfitting).
-    *   **Recommendation:** Start with 100-150 epochs.
-*   **Image Size:** (e.g., 224, 320, 640)
-    *   Images will be resized to this square dimension (e.g., 224x224 pixels for many classification models) before being fed to the AI.
-    *   Larger sizes can sometimes improve accuracy for detecting fine details but will consume more memory and slow down training.
-    *   **Recommendation:** 224 or 320 for classification is common. 640 can also be used. Check YOLOv8 classification defaults.
-*   **Batch Size:** (e.g., 8, 16, 32, 64)
-    *   The number of images processed by the AI at one time.
-    *   If you have a powerful computer with a good graphics card (GPU), you might use a larger batch size. If you run into memory errors, try reducing this.
-    *   **Recommendation:** 16 or 32 is a good starting point for GPUs.
-*   **Experiment Name:** (e.g., `Rhesus_ID_v1`, `PrimateSpecies_Classifier_Mar2024`)
-    *   A descriptive name for this particular training session. This name will be used to create a folder within your "Output Folder" where the results (including your trained model) will be saved. Make it unique and meaningful!
-*   **Device:** (Options: auto, cpu, cuda:0)
-    *   `auto`: The app will try to use a compatible GPU if available. GPUs make training much faster. If no GPU is found, it will use your computer's main processor (CPU).
-    *   `cpu`: Forces the training to run on the CPU (slower).
-    *   `cuda:0`: If you have multiple GPUs, you can specify which one to use (advanced).
-    *   **Recommendation:** Leave it as `auto`.
-
-###### Advanced Options (Optional)
-
-This section is for users who want more fine-grained control. If you're just starting, you can usually leave these at their defaults or keep this section collapsed (unchecked).
-
-*   **Checkable Box:** Click the "Advanced Options" title or checkbox to expand/collapse these settings.
-*   **Learning Rate:** (e.g., 0.001) Controls how much the model adjusts itself during each step of learning.
-*   **Patience:** (e.g., 20, 50) If the model's performance doesn't improve for this many epochs, training might stop early to save time and prevent overfitting.
-*   **Enable Data Augmentation:** (Checkbox, usually checked by default)
-    *   When checked, the app will create slightly modified versions of your training images (e.g., flipping them, changing brightness slightly) on the fly. This helps the model learn to be more robust and generalize better to new, unseen images.
-    *   **Recommendation:** Keep this enabled unless you have a specific reason not to.
-*   **Optimizer:** (e.g., AdamW, SGD, Adam) The specific mathematical algorithm used to help the model learn. `AdamW` is a good modern default.
-*   **Save Best Model Only:** (Checkbox, usually checked by default)
-    *   If checked, only the model that performs best on a validation set during training will be saved as `best.pt`. If unchecked, models from various epochs might be saved, using more disk space.
-    *   **Recommendation:** Keep this enabled to save the most useful model.
-
-###### Starting Training
-
-1.  Once you've configured all the parameters, click the **"Start Training"** button.
-2.  The button might change appearance, and the "Training Status" section will update.
-
-###### Training Status
-
-*   **Status Label:** This label provides real-time feedback:
-    *   `Status: Ready` (Before you start)
-    *   `Status: Training starting...`
-    *   `Status: Training in progress...` (You might see updates here or in the terminal)
-    *   `Status: Training 'YourExperimentName' completed successfully!`
-    *   `Status: Training 'YourExperimentName' failed. [Error message]`
-*   **Terminal Output:** Keep an eye on the terminal/command prompt window where you launched the main MFID app. Detailed progress from YOLOv8, including metrics for each epoch (accuracy, loss), will be printed there. This is very useful for monitoring.
-
-###### Training Output: Your AI Model!
-
-*   **Where to find it:** Once training is complete, navigate to your selected "Output Folder." Inside it, you'll find a subfolder named `classify` (this is a YOLOv8 default), and inside that, another subfolder with the "Experiment Name" you provided.
-    *   Example path: `Your_Output_Folder/classify/Your_Experiment_Name/`
-*   **Key Files:**
-    *   `weights/`: This subfolder is important!
-        *   `best.pt`: This is usually the **trained AI model file you want to use**. The `.pt` extension stands for PyTorch, the AI framework used. This file contains the "brain" of your classifier. This is the model you would load into the **Identity Detection App**.
-        *   `last.pt`: The model from the very last epoch of training.
-    *   Other files and folders: You'll also see graphs of performance (like `results.png`, `confusion_matrix.png`), logs (`results.csv`), and configuration files. These are useful for analyzing the training process.
-
-#### 2.3.6. Example Workflow: Training an Individual Macaque Classifier
-
-Let's walk through a complete example for this module.
-
-**Goal:** Train a model to tell the difference between two macaques, "Leo" and "Mia".
-
-**Your Starting Point:** You have a folder named `MacaqueFaces` on your Desktop, containing cropped face images of Leo and Mia (e.g., `leo_face1.jpg`, `mia_profile.png`).
-
-1.  **Launch the Main MFID App** and open the **Custom Training & Annotation App**.
-
-2.  **Step 1: Select Folders**
-    *   **Data Folder:** Click "Browse..." and select your `MacaqueFaces` folder.
-    *   **Output Folder:** Click "Browse..." and select (or create) a folder, say `MacaqueID_ModelsOutput`.
-
-3.  **Step 2 (Tabs) - "Image Annotation" Tab**
-    *   Assuming filenames are not perfectly indicative or you want to verify each.
-        1.  Click "Launch Manual Annotator."
-        2.  For each image:
-            *   If it's Leo, type "Leo" in the label box and click "Next Image."
-            *   If it's Mia, type "Mia" in the label box and click "Next Image."
-        3.  Continue until all images are labeled. Close the annotator.
-    *   **Verification:** Open your `MacaqueFaces` folder. You should now see two subfolders: `Leo` (containing all Leo's face images) and `Mia` (containing all Mia's face images).
-
-4.  **Step 2 (Tabs) - "YOLOv8 Training" Tab**
-    *   **Configure Basic Settings:**
-        *   Model Size: `s` (e.g., for `yolov8s-cls.pt`)
-        *   Epochs: `150`
-        *   Image Size: `224`
-        *   Batch Size: `32`
-        *   Experiment Name: `LeoMia_Classifier_v1`
-        *   Device: `auto`
-    *   (Optional) Review "Advanced Options".
-
-5.  **Start Training:**
+3.  **Start Training:**
     *   Click the **"Start Training"** button.
-    *   Monitor the "Training Status" label and the terminal output.
+    *   The app will first prepare your data (creating necessary configuration files) and then begin the training process.
+    *   You can monitor the progress in the "Training Status" area, which shows live updates and performance metrics from the model as it learns.
 
-6.  **Get Your Model:**
-    *   Once training completes successfully, go to `MacaqueID_ModelsOutput/classify/LeoMia_Classifier_v1/weights/`.
-    *   The file `best.pt` is your trained Leo vs. Mia classifier model. You can now use this in the **Identity Detection App**.
+4.  **Get Your Model!**
+    *   When training is complete, a "Training successful" message will appear.
+    *   Navigate to your chosen **Output Folder**. Inside, you will find a folder with your **Experiment Name**.
+    *   The path will look something like this: `Output_Folder/classify/Your_Experiment_Name/weights/`.
+    *   Inside the `weights` folder, the file `best.pt` is your new, custom-trained AI model! You can now use this model in the **Analysis App**.
 
----
-**(End of Custom Training & Annotation App detailed section)**
+## 5. Practical Example: Training an Apple vs. Pear Classifier
 
-### 2.4. Settings App
+Let's walk through a complete, real-world example. We will train a model to tell the difference between apples and pears using the sample images included in the `test/` folder.
 
-**Purpose:**
-The Settings App allows you to configure global preferences for the MFID application suite, making your workflow more consistent.
+### 5.1. Part 1: Organize and Annotate the Data
 
-**Interface and Options:**
+Our goal is to create a dataset where all apple images are in a folder named `apple` and all pear images are in a folder named `pear`.
 
-*   **Default Output Folders:** You can specify default paths where different modules (Body Detection, Identity Detection, Training) will suggest saving their outputs. This saves you from repeatedly selecting the same folders.
-    *   Default Body Detection Output
-    *   Default Identity Detection Output
-    *   Default Training Models Output
-*   Other potential settings might include theme preferences, logging levels, etc.
+1.  **Launch the MFID application** (`mfid run`).
+2.  Open the **Custom Training & Annotation App** by clicking "Training".
+3.  **Set Your Folders:**
+    *   For **"Data Folder"**, click "Browse..." and select the `test` folder inside the `mfid` project directory.
+    *   For **"Output Folder"**, create a new folder somewhere on your computer, for example, on your Desktop, and name it `Fruit_Models`. Select this folder.
+4.  **Annotate the Images:** We'll use the **Auto-Grouping** feature since the filenames are helpful (`apple1.jpeg`, `pear1.jpeg`).
+    *   Go to the "Image Annotation" tab.
+    *   In the "Enter a keyword..." text box, type `apple`.
+    *   Click **"Auto-Group by Keyword"**. A notification will tell you it moved 10 images.
+    *   Now, type `pear` in the text box.
+    *   Click **"Auto-Group by Keyword"**. It will move another 10 images.
+5.  **Check Your Work:** If you look inside the `test` folder on your computer, you will now see two new subfolders: `apple` and `pear`, each containing the correct images. Our dataset is ready!
 
-**Workflow:**
+### 5.2. Part 2: Train the Classification Model
 
-1.  **Open the Settings App** from the main MFID toolbar.
-2.  **Modify Paths:** For each available setting (e.g., "Default Training Output Folder"), click "Browse..." to select your preferred default directory.
-3.  **Save Settings:** Click a "Save" or "Apply" button. These settings will be remembered for future sessions.
+Now we'll use our organized dataset to train the classifier.
 
-## 3. Tips for Optimal Performance & Results
+1.  In the Custom Training App, switch to the **"YOLOv8 Training"** tab.
+2.  **Select Training Mode:** Make sure `Classification` is selected.
+3.  **Fill in the Training Configuration:**
+    *   **Model Size:** Select `s`.
+    *   **Epochs:** Enter `50`. (For a simple task like this, 50 is plenty).
+    *   **Image Size:** Enter `224`.
+    *   **Batch Size:** `8` should be fine.
+    *   **Experiment Name:** Type `Apple_vs_Pear_Classifier`.
+    *   **Device:** Leave as `auto`.
+4.  **Start Training:** Click the **"Start Training"** button.
+5.  **Monitor Progress:** Watch the status area. You'll see the progress bar fill up and metrics appearing in the text box below. Since this is a small dataset, it should only take a minute or two, especially on a GPU.
+6.  **Find Your Model:** Once it's done, navigate to the output folder you created. Inside `Fruit_Models`, you will find the final model here: `Fruit_Models/classify/Apple_vs_Pear_Classifier/weights/best.pt`.
 
-*   **Use a GPU:** For any AI-related tasks (detection, training), using a compatible NVIDIA GPU will drastically reduce processing time.
-*   **Data Quality (for Training):**
-    *   **Good Quality Images:** Use clear, well-lit images for training. Avoid very blurry or tiny images.
-    *   **Variety is Key:** Include images of your subjects in different settings, angles, lighting conditions, and backgrounds. This helps the model generalize better.
-    *   **Sufficient Data:** While the app can train with few images, more diverse data (hundreds of images per class for robust individual ID) usually leads to better performance.
-    *   **Balanced Dataset:** Try to have a roughly similar number of images for each category/individual you are training. If one class has vastly more images than another, the model might become biased.
-    *   **Clean Data:** Ensure your annotation is accurate. If you accidentally put images of Leo in Mia's folder, the model will get confused!
-*   **Iterative Training:** Don't expect perfect results on the first try. Training AI models is often an iterative process. Train a model, evaluate its performance, identify weaknesses (e.g., misclassifications), gather more data for those weak cases, and retrain.
+### 5.3. Part 3: Test Your New Model
 
-## 4. Troubleshooting
+Let's use our new model to classify an image it has never seen before.
 
-*   **"ModuleNotFoundError: No module named 'mfid' or 'mfid.some_module'"**:
-    *   Ensure your virtual environment is activated.
-    *   Make sure you ran `pip install -e .` from the root directory of the `mfid` project.
-    *   If running a script directly, ensure your `PYTHONPATH` is set up correctly or run it as a module (e.g., `python -m mfid.module.script`).
-*   **"YOLO command not found" or Ultralytics/PyTorch errors**:
-    *   Verify `ultralytics` and `torch` (with CUDA if using GPU) are correctly installed in your virtual environment (`pip list`).
-    *   Check CUDA and NVIDIA driver compatibility if GPU errors occur.
-*   **Training Fails or Gives Poor Results**:
-    *   **Check Data Structure:** For training, double-check that your Data Folder has the correct subfolder structure (one subfolder per class, named after the class, containing images of only that class).
-    *   **Number of Images:** Do you have enough images per class?
-    *   **Image Quality & Variety:** Are your images clear and representative of the conditions where you'll use the model?
-    *   **Epochs/Learning Rate:** Experiment with these parameters. Sometimes more epochs are needed, or a different learning rate.
-*   **Application or Training is Very Slow**:
-    *   If not using a GPU, expect significantly longer times.
-    *   For training, reducing "Image Size" or "Batch Size" can help if limited by memory/CPU, but might impact accuracy.
-*   **Out of Memory Errors during Training (CUDA out of memory)**:
-    *   Reduce the "Batch Size" significantly.
-    *   Reduce the "Image Size" for training.
-    *   Close other GPU-intensive applications.
+1.  **Download a new image** of an apple or a pear from the internet and save it to your computer.
+2.  From the main MFID window, open the **Analysis App**.
+3.  **Configure the Analysis:**
+    *   **Input:** Under "Input Selection", click "Select Files..." and choose the new image you just downloaded.
+    *   **Output:** Select any folder for the results.
+    *   **Analysis Mode:** Make sure **Classification** is selected.
+    *   **Models -> Classification Model:** This is the crucial step. Click the **"Import Model"** button. Navigate to your `best.pt` file (`.../weights/best.pt`) and select it. Your model will now appear in the dropdown list. Make sure it is selected.
+4.  **Run Analysis:** Click the **"Run Analysis"** button at the bottom.
+5.  **Check the Results:** The process will be almost instant. Open the output folder you selected. Inside, you'll find a `classification_summary.txt` file. Open it, and it will show the filename along with its predicted class ("apple" or "pear") and a confidence score!
 
-## 5. Dependencies
-
-MFID relies on several key Python libraries. The primary ones are managed via `requirements.txt` and `setup.py`/`pyproject.toml`:
-
-*   **PyQt5:** For the graphical user interface.
-*   **ultralytics:** For YOLOv8 object detection and image classification functionalities.
-*   **OpenCV-Python (cv2):** For image and video processing.
-*   **NumPy:** For numerical operations.
-*   **Pillow (PIL):** For image manipulation.
-*   Other libraries listed in `requirements.txt` (e.g., `PyYAML`, `requests`, `scipy`, `torch`, `torchvision`, `tqdm`, `pandas`, `seaborn`).
-
----
-
-We hope this comprehensive guide helps you make the most of the MFID application suite. Happy researching!
-
-
+Congratulations! You have successfully annotated a dataset, trained a custom AI model, and used it to make a prediction. You can follow this same process for any classification or detection task. 
