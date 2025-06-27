@@ -25,6 +25,7 @@ Getting MFID set up on your computer is a straightforward process. Follow these 
 *   **Hardware:**
     *   A modern computer is sufficient for most tasks.
     *   For training new AI models, a powerful computer with a dedicated **NVIDIA Graphics Card (GPU)** is **highly recommended**. Training on a GPU can be 10 to 50 times faster than on a standard computer processor (CPU).
+    *   **Apple Silicon Users (M1/M2/M3):** The application runs efficiently on Apple Silicon, leveraging the MPS backend for accelerated model training and inference.
 
 ### 2.2. Installation Steps
 
@@ -37,36 +38,72 @@ Getting MFID set up on your computer is a straightforward process. Follow these 
     If you don't use `git`, you can download the project as a ZIP file from the GitHub page and unzip it.
 
 2.  **Set Up a Virtual Environment (Highly Recommended):**
-    This step sounds technical, but it's like creating a dedicated, clean workspace for MFID so it doesn't interfere with other Python software on your computer.
-    Open your terminal or command prompt, navigate into the `mfid` folder you just downloaded, and run:
+    This step is crucial. It creates a dedicated, clean workspace for MFID so it doesn't interfere with other Python software on your computer. We will name the environment `mfid_venv` to avoid conflicts.
+
+    Open your terminal in the `mfid` folder and run:
     ```bash
-    # This command creates a virtual environment folder named .venv
-    python3 -m venv .venv
-
-    # To activate it on macOS or Linux:
-    source .venv/bin/activate
-
-    # To activate it on Windows:
-    .venv\Scripts\activate
+    # This command creates a virtual environment folder named mfid_venv
+    python3 -m venv mfid_venv
     ```
-    You'll know it's active because you'll see `(.venv)` at the beginning of your command prompt.
 
-3.  **Install Dependencies:**
-    With the virtual environment active, run the following commands. This will install MFID and all the libraries it depends on.
-    ```bash
-    pip install -e .
-    pip install -r requirements.txt
-    ```
+3.  **Activate the Environment:**
+    Before installing dependencies, you must "activate" the environment.
+
+    *   **On macOS or Linux:**
+        ```bash
+        source mfid_venv/bin/activate
+        ```
+    *   **On Windows:**
+        ```bash
+        mfid_venv\Scripts\activate
+        ```
+    You'll know it's active because you'll see `(mfid_venv)` at the beginning of your command prompt.
+
+4.  **Install Dependencies:**
+    With the virtual environment active, install the required packages. You can use either `uv` (faster) or `pip`.
+
+    *   **Using `uv` (Recommended):**
+        ```bash
+        # Install uv if you don't have it
+        pip install uv
+        # Install the package in editable mode and its dependencies
+        uv pip install -e .
+        uv pip install -r requirements.txt
+        ```
+    *   **Using `pip`:**
+        ```bash
+        pip install -e .
+        pip install -r requirements.txt
+        ```
 
 That's it! MFID is now installed.
 
-## 3. Getting Started: Launching the Application
+## 3. Launching the Application
 
-To start the main MFID application, make sure your virtual environment is still active, and run the following command in your terminal from the project's root directory:
+To run the MFID application, you have two primary methods.
 
-```bash
-mfid run
-```
+### Method 1: Activate the Environment (Recommended)
+
+This is the standard and easiest way.
+
+1.  Make sure your `mfid_venv` virtual environment is active (you see `(mfid_venv)` in your terminal prompt).
+2.  Run the launch command:
+    ```bash
+    mfid run
+    ```
+
+### Method 2: Direct Execution (Without Activating)
+
+If you prefer not to activate the environment every time, you can call the executable directly.
+
+*   **On macOS or Linux:**
+    ```bash
+    ./mfid_venv/bin/mfid run
+    ```
+*   **On Windows:**
+    ```bash
+    .\mfid_venv\Scripts\mfid.exe run
+    ```
 
 This will open the main MFID window, which acts as a launchpad for all the different tools in the suite.
 
@@ -75,6 +112,8 @@ This will open the main MFID window, which acts as a launchpad for all the diffe
 From here, you can access all the modules: **Analysis**, **Detection**, **Identity**, **Training**, and **Settings**.
 
 ## 4. The MFID Application Suite
+
+The MFID suite is composed of several specialized modules, each designed for a specific part of the computer vision workflow.
 
 ### 4.1. Analysis App
 
@@ -113,7 +152,48 @@ The Analysis App is your central hub for processing large amounts of data. After
 
 ---
 
-### 4.2. Custom Training & Annotation App
+### 4.2. Detection App
+
+The Detection App is a specialized tool that offers more fine-grained control over the object detection process compared to the one in the Analysis App. It is ideal for when you need to run pure detection tasks with detailed output configurations.
+
+**How to open:** Click the "Detection" button in the main MFID toolbar.
+
+**Main Features:**
+
+*   **Flexible Input:** Process individual files or entire folders of images and videos.
+*   **Advanced Model Handling:** Supports both standard YOLOv8 models and models from Roboflow, giving you a wider range of pre-trained and custom models to use.
+*   **Rich Output Options:**
+    *   **Save Annotated Media:** Generates video or image files with bounding boxes, labels, and confidence scores drawn directly on them.
+    *   **Save Crops:** Automatically extracts every detected object and saves it as an individual image file, perfect for dataset curation.
+    *   **Save Coordinates (TXT):** Creates a text file for each input file, containing the bounding box coordinates, class, and confidence score for every detection.
+    *   **Sort Detections:** Automatically organizes your source files into `positive_detections` and `negative_detections` subfolders.
+*   **Detailed Summary:** Produces a `detection_summary.txt` file that logs whether detections were found in each file and provides statistics on the number of detections per frame.
+
+---
+
+### 4.3. Identity App
+
+The Identity App is a powerful Re-Identification (ReID) tool designed to recognize *individuals*. This goes a step beyond simple object detection by assigning a specific identity to each detected instance. It is perfect for tracking individual animals across videos or photo collections.
+
+**How to open:** Click the "Identity" button in the main MFID toolbar.
+
+**Workflow:**
+
+The Identity App uses a sophisticated two-stage process:
+
+1.  **Detection:** First, it uses a standard object detection model (e.g., a "monkey" detector) to find all instances of the target object in an image or video frame.
+2.  **Identification:** For each detected object, it uses a second, specialized **classification model** (an "identity" model) to determine which specific individual it is (e.g., "Kabuki," "Quinoa").
+
+**Main Features:**
+
+*   **Individual Recognition:** Assigns specific identity labels to detected objects.
+*   **Confidence Scoring:** Provides a confidence score for each identification, allowing you to gauge the certainty of the match.
+*   **Result Aggregation:** When processing videos, it aggregates results across frames to provide a cumulative summary of which individuals were seen and with what confidence.
+*   **Output:** Generates a detailed report (`cumulative_identity_results.txt`) listing each identified individual and their highest confidence score, as well as annotated media with identity labels.
+
+---
+
+### 4.4. Custom Training & Annotation App
 
 This is where you teach the AI. This module gives you all the tools you need to create your own custom models from scratch.
 
@@ -121,7 +201,7 @@ This is where you teach the AI. This module gives you all the tools you need to 
 
 The app is organized into two main tabs: **Image Annotation** and **YOLOv8 Training**.
 
-#### 4.2.1. Step 1: Image Annotation
+#### 4.4.1. Step 1: Image Annotation
 
 Before you can train a model, you must label your data. This is how the AI learns. You need to show it many examples.
 
@@ -159,7 +239,7 @@ The goal is to draw boxes around objects in images.
     *   You can draw multiple boxes on a single image.
 4.  When you click "Next", the app saves a special text file alongside your image that contains the coordinates and labels of all the boxes you drew.
 
-#### 4.2.2. Step 2: YOLOv8 Training
+#### 4.4.2. Step 2: YOLOv8 Training
 
 Once your data is annotated, you are ready to train.
 
@@ -182,7 +262,21 @@ Once your data is annotated, you are ready to train.
     *   When training is complete, a "Training successful" message will appear.
     *   Navigate to your chosen **Output Folder**. Inside, you will find a folder with your **Experiment Name**.
     *   The path will look something like this: `Output_Folder/classify/Your_Experiment_Name/weights/`.
-    *   Inside the `weights` folder, the file `best.pt` is your new, custom-trained AI model! You can now use this model in the **Analysis App**.
+    *   Inside the `weights` folder, the file `best.pt` is your new, custom-trained AI model! You can now use this model in the other apps.
+
+---
+
+### 4.5. Settings App
+
+The Settings App provides a simple interface to configure global application settings.
+
+**How to open:** Click the "Settings" button in the main MFID toolbar.
+
+**Current Settings:**
+
+*   **Default Output Directory:** You can set a default folder where all output files from the Analysis, Detection, and Identity apps will be saved. This saves you from having to select an output folder every time you run a process.
+
+---
 
 ## 5. Practical Example: Training an Apple vs. Pear Classifier
 
