@@ -60,20 +60,20 @@ Getting MFID set up on your computer is a straightforward process. Follow these 
     You'll know it's active because you'll see `(mfid_venv)` at the beginning of your command prompt.
 
 4.  **Install Dependencies:**
-    With the virtual environment active, install the required packages. You can use either `uv` (faster) or `pip`.
+    With the virtual environment active, install the required packages. You can use either `pip` or `uv`.
 
-    *   **Using `uv` (Recommended):**
+    *   **Using `pip`:**
+        ```bash
+        pip install -e .
+        pip install -r requirements.txt
+        ```
+    *   **Using `uv`:**
         ```bash
         # Install uv if you don't have it
         pip install uv
         # Install the package in editable mode and its dependencies
         uv pip install -e .
         uv pip install -r requirements.txt
-        ```
-    *   **Using `pip`:**
-        ```bash
-        pip install -e .
-        pip install -r requirements.txt
         ```
 
 That's it! MFID is now installed.
@@ -107,9 +107,9 @@ If you prefer not to activate the environment every time, you can call the execu
 
 This will open the main MFID window, which acts as a launchpad for all the different tools in the suite.
 
-![Main App Screenshot](images/main.jpg)
+![Main App Screenshot](images/screen_main_page.png)
 
-From here, you can access all the modules: **Analysis**, **Detection**, **Identity**, **Training**, and **Settings**.
+From here, you can access all the modules: **Analysis**, **Training**, and **Settings**.
 
 ## 4. The MFID Application Suite
 
@@ -126,6 +126,8 @@ The Analysis App is your central hub for processing large amounts of data. After
 *   **Input:** You can choose to process a single file, a selection of multiple files, or an entire folder of images and videos.
 *   **Output:** All results from an analysis run are saved neatly in a designated output folder.
 *   **Analysis Modes:** You can choose one of three powerful analysis modes.
+
+![Analysis Mode](images/select_analysis_mode.png)
 
 #### 4.1.1. Analysis Mode: Classification
 
@@ -150,50 +152,11 @@ The Analysis App is your central hub for processing large amounts of data. After
     2.  For each fruit found, decide if it's an apple or a pear (classification).
 *   **Output:** It produces a detailed summary (`detection_classification_summary.txt`) that lists each detection and its corresponding classification label.
 
----
-
-### 4.2. Detection App
-
-The Detection App is a specialized tool that offers more fine-grained control over the object detection process compared to the one in the Analysis App. It is ideal for when you need to run pure detection tasks with detailed output configurations.
-
-**How to open:** Click the "Detection" button in the main MFID toolbar.
-
-**Main Features:**
-
-*   **Flexible Input:** Process individual files or entire folders of images and videos.
-*   **Advanced Model Handling:** Supports both standard YOLOv8 models and models from Roboflow, giving you a wider range of pre-trained and custom models to use.
-*   **Rich Output Options:**
-    *   **Save Annotated Media:** Generates video or image files with bounding boxes, labels, and confidence scores drawn directly on them.
-    *   **Save Crops:** Automatically extracts every detected object and saves it as an individual image file, perfect for dataset curation.
-    *   **Save Coordinates (TXT):** Creates a text file for each input file, containing the bounding box coordinates, class, and confidence score for every detection.
-    *   **Sort Detections:** Automatically organizes your source files into `positive_detections` and `negative_detections` subfolders.
-*   **Detailed Summary:** Produces a `detection_summary.txt` file that logs whether detections were found in each file and provides statistics on the number of detections per frame.
+![Using a custom model](images/use_custom_model.png)
 
 ---
 
-### 4.3. Identity App
-
-The Identity App is a powerful Re-Identification (ReID) tool designed to recognize *individuals*. This goes a step beyond simple object detection by assigning a specific identity to each detected instance. It is perfect for tracking individual animals across videos or photo collections.
-
-**How to open:** Click the "Identity" button in the main MFID toolbar.
-
-**Workflow:**
-
-The Identity App uses a sophisticated two-stage process:
-
-1.  **Detection:** First, it uses a standard object detection model (e.g., a "monkey" detector) to find all instances of the target object in an image or video frame.
-2.  **Identification:** For each detected object, it uses a second, specialized **classification model** (an "identity" model) to determine which specific individual it is (e.g., "Kabuki," "Quinoa").
-
-**Main Features:**
-
-*   **Individual Recognition:** Assigns specific identity labels to detected objects.
-*   **Confidence Scoring:** Provides a confidence score for each identification, allowing you to gauge the certainty of the match.
-*   **Result Aggregation:** When processing videos, it aggregates results across frames to provide a cumulative summary of which individuals were seen and with what confidence.
-*   **Output:** Generates a detailed report (`cumulative_identity_results.txt`) listing each identified individual and their highest confidence score, as well as annotated media with identity labels.
-
----
-
-### 4.4. Custom Training & Annotation App
+### 4.2. Custom Training & Annotation App
 
 This is where you teach the AI. This module gives you all the tools you need to create your own custom models from scratch.
 
@@ -201,7 +164,7 @@ This is where you teach the AI. This module gives you all the tools you need to 
 
 The app is organized into two main tabs: **Image Annotation** and **YOLOv8 Training**.
 
-#### 4.4.1. Step 1: Image Annotation
+#### 4.2.1. Step 1: Image Annotation
 
 Before you can train a model, you must label your data. This is how the AI learns. You need to show it many examples.
 
@@ -231,15 +194,23 @@ The goal is to sort images into folders. Each folder name is the label for all i
 The goal is to draw boxes around objects in images.
 *Example: In an image with three apples, you will draw three boxes, each labeled "apple".*
 
+The manual annotator for detection is a powerful tool with several features to make labeling fast and accurate:
+
+![Annotating Bounding Boxes](images/bounding_box_apple_example.png)
+
 1.  Click **"Launch Manual Annotator"**.
 2.  Check the **"Enable Bounding Box Mode"** box.
 3.  For each image:
-    *   Click and drag your mouse to draw a box around an object.
-    *   A dialog will ask you for the label for that box.
-    *   You can draw multiple boxes on a single image.
+    *   **Draw a box:** Click and drag your mouse to draw a box around an object. A dialog will ask for the label.
+    *   **Label Persistence:** The label you enter will be automatically suggested for the next box you draw, speeding up the process when labeling many objects of the same class.
+    *   **Edit or Delete a Box:** Simply click on an existing bounding box. A menu will appear allowing you to either **rename the label** or **delete the box**.
+    ![Editing a Bounding Box](images/effect_clicking_bounding_box_apple.png)
+    *   **Remove Last Box:** If you make a mistake, click the "Remove Last Box" button to delete the most recently added bounding box.
+    *   **Delete Image:** If an image is a false positive or not useful for your dataset, you can click the "Delete Image" button to remove it permanently.
+    *   **Full Screen Mode:** Click the "Toggle Full Screen" button for a larger, unobstructed view of the image, which is ideal for detailed annotation work.
 4.  When you click "Next", the app saves a special text file alongside your image that contains the coordinates and labels of all the boxes you drew.
 
-#### 4.4.2. Step 2: YOLOv8 Training
+#### 4.2.2. Step 2: YOLOv8 Training
 
 Once your data is annotated, you are ready to train.
 
@@ -266,7 +237,7 @@ Once your data is annotated, you are ready to train.
 
 ---
 
-### 4.5. Settings App
+### 4.3. Settings App
 
 The Settings App provides a simple interface to configure global application settings.
 
