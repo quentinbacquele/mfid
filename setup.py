@@ -7,6 +7,10 @@ setup(
     author_email= 'quentin.bacquele@etu.unistra.fr',
     url= 'https://github.com/quentinbacquele/mfid',
     packages=find_packages(),
+    include_package_data=True,
+    package_data={
+        'mfid': ['models/*.pt', 'icons/*'],
+    },
     install_requires=[
         'PyQt5',
         'ultralytics',
@@ -19,7 +23,6 @@ setup(
         'torch',
         'torchvision',
         'tqdm',
-        'pyqt5',
         'pandas',
         'seaborn'
     ],
@@ -28,4 +31,5 @@ setup(
             'mfid=mfid.cli:main',
         ],
     },
+    python_requires='>=3.8',
 )

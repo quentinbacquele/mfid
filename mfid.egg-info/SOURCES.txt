@@ -1,7 +1,12 @@
+LICENCE.txt
+README.md
+pyproject.toml
 setup.py
+mfid/__init__.py
+mfid/cli.py
 mfid.egg-info/PKG-INFO
 mfid.egg-info/SOURCES.txt
 mfid.egg-info/dependency_links.txt
 mfid.egg-info/entry_points.txt
-mfid.egg-info/requires.txt
 mfid.egg-info/top_level.txt
+mfid/models/best_m_id.pt

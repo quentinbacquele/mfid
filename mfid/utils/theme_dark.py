@@ -32,5 +32,21 @@ def DarkButton(text, function):
 
 def DarkLineEdit(line_edit_widget, placeholder_text):
     line_edit_widget.setPlaceholderText(placeholder_text)
-    # Ensure placeholder text is black for visibility
-    line_edit_widget.setStyleSheet("QLineEdit { color: black; } QLineEdit::placeholder { color: black; }")
+    # Set light grey background with black text for maximum visibility
+    line_edit_widget.setStyleSheet("""
+        QLineEdit { 
+            background-color: #E0E0E0; 
+            color: black; 
+            border: 1px solid #CCCCCC; 
+            padding: 6px; 
+            border-radius: 3px; 
+            font-size: 13px;
+        } 
+        QLineEdit::placeholder { 
+            color: #666666; 
+        }
+        QLineEdit:focus {
+            border: 2px solid #2196F3;
+            background-color: #F0F0F0;
+        }
+    """)

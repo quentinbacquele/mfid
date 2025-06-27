@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mfid"
+version = "0.1.0"
+description = "MonkeyFaceID - Recognition of Rhesus macaques from images and videos"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    {name = "Quentin Bacquelé", email = "quentin.bacquele@etu.unistra.fr"}
+]
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.scripts]
+mfid = "mfid.cli:main"
